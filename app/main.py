@@ -1,17 +1,41 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+
+from app.config.settings import settings
+from app.database.session import get_db
+
 
 app = FastAPI(
-    title="HireFlow API",
+    title=settings.app_name,
     description="Backend API for the HireFlow recruitment platform",
-    version="0.1.0",
+    version=settings.app_version,
+    debug=settings.debug,
 )
 
 
 @app.get("/")
 async def root() -> dict[str, str]:
-    return {"message": "HireFlow API is running"}
+    return {
+        "message": f"{settings.app_name} is running",
+        "environment": settings.app_env,
+        "version": settings.app_version,
+    }
 
 
 @app.get("/health")
 async def health_check() -> dict[str, str]:
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "environment": settings.app_env,
+    }
+
+
+@app.get("/database-health")
+def database_health(db: Session = Depends(get_db)) -> dict[str, str]:
+    db.execute(text("SELECT 1"))
+
+    return {
+        "status": "ok",
+        "database": "connected",
+    }
