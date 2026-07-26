@@ -3,8 +3,10 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.api.auth import router as auth_router
+from app.api.users import router as users_router
 from app.config.settings import settings
 from app.database.session import get_db
+
 
 
 app = FastAPI(
@@ -19,6 +21,10 @@ app.include_router(
     prefix="/api/v1",
 )
 
+app.include_router(
+    users_router,
+    prefix="/api/v1",
+)
 
 @app.get("/")
 async def root() -> dict[str, str]:
