@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from app.api.auth import router as auth_router
 from app.config.settings import settings
 from app.database.session import get_db
 
@@ -11,6 +12,11 @@ app = FastAPI(
     description="Backend API for the HireFlow recruitment platform",
     version=settings.app_version,
     debug=settings.debug,
+)
+
+app.include_router(
+    auth_router,
+    prefix="/api/v1",
 )
 
 
